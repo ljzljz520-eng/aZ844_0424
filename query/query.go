@@ -35,6 +35,11 @@ func (s Service) Search(ctx context.Context, actor, q string) ([]domain.Record, 
 	}
 	out := []domain.Record{}
 	for _, r := range records {
+		// Only return records within the actor's authorized warehouse scope;
+		// admins see everything, ordinary dispatchers see only their PermissionScope.
+		if !p.CanAccess(r.WarehouseID) {
+			continue
+		}
 		out = append(out, r)
 	}
 	return out, nil
